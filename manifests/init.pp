@@ -19,6 +19,8 @@
 # [*backup_dir*]
 #   The base directory for automated S3 backups. Defaults to 
 #   '/var/backups/local/s3cmd'.
+# [*backups*]
+#   A hash of s3cmd::backup resources to realize.
 #
 # == Examples
 #
@@ -43,7 +45,8 @@ class s3cmd
     $secret_key,
     $use_https = 'True',
     $gpg_passphrase = '',
-    $backup_dir = '/var/backups/local/s3cmd'
+    $backup_dir = '/var/backups/local/s3cmd',
+    $backups = {}
 )
 {
 
@@ -59,5 +62,8 @@ if hiera('manage_s3cmd', 'true') != 'false' {
         gpg_passphrase => $gpg_passphrase,
         backup_dir => $backup_dir,
     }
+
+    # Realize the defined backup jobs
+    create_resources('s3cmd::backup', $backups)
 }
 }
