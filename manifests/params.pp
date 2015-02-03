@@ -10,7 +10,7 @@ class s3cmd::params {
             $package_name = 's3cmd'
         }
         default: {
-            $package_name = 's3cmd'
+            fail("Unsupported OS: ${::osfamily}")
         }
     }
 }
