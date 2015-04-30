@@ -3,12 +3,10 @@
 #
 # Installs s3cmd package
 #
-class s3cmd::install {
-
-    include s3cmd::params
+class s3cmd::install inherits s3cmd::params {
 
     package { 's3cmd':
-        name => "${::s3cmd::params::package_name}",
         ensure => installed,
+        name   => $::s3cmd::params::package_name,
     }
 }

@@ -8,6 +8,9 @@
 #
 # == Parameters
 #
+# [*manage*]
+#  Whether to manage s3cmd with Puppet or not. Valid values are 'yes' (default) 
+#  and 'no'.
 # [*access_key*]
 #   S3 access key to use
 # [*secret_key*]
@@ -15,7 +18,7 @@
 # [*use_https*]
 #   Whether to use https. Valid values 'True' and 'False'. Defaults to 'True'.
 # [*gpg_passphrase*]
-#   GPG passphrase to use. Leave empty to not use encryption at all.
+#   GPG passphrase to use. Leave undefined to not use encryption at all.
 # [*backup_dir*]
 #   The base directory for automated S3 backups. Defaults to 
 #   '/var/backups/local/s3cmd'.
@@ -41,26 +44,26 @@
 #
 class s3cmd
 (
+    $manage = 'yes',
     $access_key,
     $secret_key,
     $use_https = 'True',
-    $gpg_passphrase = '',
+    $gpg_passphrase = undef,
     $backup_dir = '/var/backups/local/s3cmd',
     $backups = {}
 )
 {
 
-# Rationale for this is explained in init.pp of the sshd module
-if hiera('manage_s3cmd', 'true') != 'false' {
+if $manage == 'yes' {
 
-    include s3cmd::install
+    include ::s3cmd::install
 
-    class { 's3cmd::config':
-        access_key => $access_key,
-        secret_key => $secret_key,
-        use_https => $use_https,
+    class { '::s3cmd::config':
+        access_key     => $access_key,
+        secret_key     => $secret_key,
+        use_https      => $use_https,
         gpg_passphrase => $gpg_passphrase,
-        backup_dir => $backup_dir,
+        backup_dir     => $backup_dir,
     }
 
     # Realize the defined backup jobs

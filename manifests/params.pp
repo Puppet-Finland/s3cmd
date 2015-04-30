@@ -5,6 +5,8 @@
 #
 class s3cmd::params {
 
+    include ::os::params
+
     case $::osfamily {
         'Debian': {
             $package_name = 's3cmd'

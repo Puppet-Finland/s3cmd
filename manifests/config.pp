@@ -11,35 +11,34 @@ class s3cmd::config
     $use_https,
     $gpg_passphrase,
     $backup_dir
-)
+
+) inherits s3cmd::params
 {
 
-    include os::params
-
     # Activate client-side encryption if GPG passphrase is given
-    if $gpg_passphrase == '' {
-        $encrypt = 'False'
-    } else {
+    if $gpg_passphrase {
         $encrypt = 'True'
+    } else {
+        $encrypt = 'False'
     }
 
     # Configure s3cmd
-    file { "s3cmd-root-s3cfg":
-        name => "/root/.s3cfg",
-        ensure => present,
+    file { 's3cmd-root-s3cfg':
+        ensure  => present,
+        name    => '/root/.s3cfg',
         content => template('s3cmd/s3cfg.erb'),
-        owner => root,
-        group => "${::os::params::admingroup}",
-        mode => 600,
+        owner   => $::os::params::adminuser,
+        group   => $::os::params::admingroup,
+        mode    => '0600',
         require => Class['s3cmd::install'],
     }
 
     # Make sure the backup directory exists
     file { 's3cmd-s3cmd':
         ensure => directory,
-        name => $backup_dir,
-        owner => root,
-        group => "${::os::params::admingroup}",
-        mode => 750,
+        name   => $backup_dir,
+        owner  => root,
+        group  => $::os::params::admingroup,
+        mode   => '0750',
     }
 }
