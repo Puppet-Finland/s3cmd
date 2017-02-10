@@ -68,6 +68,9 @@ define s3cmd::backup
         $cron_command = "/usr/bin/s3cmd sync s3://${title} ${output_dir}/${title}"
     }
 
+    # Several other modules will attempt ensure that this same directory exists
+    ensure_resource('file', $output_dir, { 'ensure' => 'directory' })
+
     cron { "s3cmd-backup-${title}-cron":
         ensure      => $ensure,
         command     => $cron_command,
@@ -76,6 +79,6 @@ define s3cmd::backup
         minute      => $minute,
         weekday     => $weekday,
         environment => "MAILTO=${email}",
-        require     => [ Class['localbackups'], File["s3cmd-backup-${title}-dir"] ],
+        require     => [ File[$output_dir], File["s3cmd-backup-${title}-dir"] ],
     }
 }
